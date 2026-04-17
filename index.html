@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SolidGround Properties</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
+
+body{
+background:#f5f7fb;
+color:#1e293b;
+}
+
+/* Header */
+
+header{
+background:linear-gradient(135deg,#0f172a,#1d4ed8);
+padding:20px 5%;
+color:white;
+}
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+font-size:32px;
+font-weight:700;
+}
+
+.menu{
+display:flex;
+gap:30px;
+}
+
+/* Hero */
+
+.hero{
+padding:80px 20px;
+text-align:center;
+background:linear-gradient(to right,#dbeafe,#eff6ff);
+}
+
+.hero h1{
+font-size:55px;
+margin-bottom:15px;
+}
+
+.hero p{
+font-size:20px;
+margin-bottom:35px;
+}
+
+/* Tabs */
+
+.tabs{
+display:flex;
+justify-content:center;
+gap:15px;
+margin-bottom:25px;
+}
+
+.tab{
+background:white;
+padding:14px 28px;
+border-radius:30px;
+cursor:pointer;
+font-weight:600;
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.active{
+background:#1d4ed8;
+color:white;
+}
+
+/* Search */
+
+.search-box{
+max-width:1200px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:25px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+input,select,button{
+padding:15px;
+border-radius:14px;
+border:1px solid #ddd;
+}
+
+button{
+background:#1d4ed8;
+color:white;
+border:none;
+font-weight:700;
+cursor:pointer;
+}
+
+/* Properties */
+
+section{
+max-width:1200px;
+margin:auto;
+padding:70px 20px;
+}
+
+.section-title{
+font-size:38px;
+margin-bottom:30px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+gap:30px;
+}
+
+.card{
+background:white;
+border-radius:24px;
+overflow:hidden;
+box-shadow:0 8px 25px rgba(0,0,0,.08);
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-6px);
+}
+
+.card img{
+width:100%;
+height:250px;
+object-fit:cover;
+}
+
+.content{
+padding:25px;
+}
+
+.price{
+font-size:30px;
+color:#1d4ed8;
+font-weight:700;
+margin:12px 0;
+}
+
+.meta{
+display:flex;
+gap:18px;
+margin-top:15px;
+flex-wrap:wrap;
+color:#64748b;
+}
+
+.contact-btn{
+margin-top:20px;
+width:100%;
+}
+
+/* No results */
+
+.no-results{
+display:none;
+background:#fee2e2;
+color:#b91c1c;
+padding:20px;
+border-radius:18px;
+text-align:center;
+font-weight:600;
+margin-top:25px;
+}
+
+/* Footer */
+
+footer{
+background:#0f172a;
+color:white;
+text-align:center;
+padding:30px;
+margin-top:70px;
+}
+
+</style>
+</head>
+<body>
+
+
+<header>
+
+<nav>
+
+<div class="logo">
+SolidGround Properties
+</div>
+
+<div class="menu">
+<span>Buy</span>
+<span>Rent</span>
+<span>Commercial</span>
+</div>
+
+</nav>
+
+</header>
+
+
+<div class="hero">
+
+<h1>Find Your Dream Property</h1>
+
+<p>Search nearby areas, apartments, villas and plots</p>
+
+
+<div class="tabs">
+
+<div class="tab active">Buy</div>
+
+<div class="tab">Rent</div>
+
+<div class="tab">Commercial</div>
+
+</div>
+
+
+<div class="search-box">
+
+<input id="areaSearch" placeholder="Enter locality (e.g. Gachibowli)">
+
+<select id="typeFilter">
+<option value="">Property Type</option>
+<option>Villa</option>
+<option>Apartment</option>
+<option>Plot</option>
+</select>
+
+<input id="maxPrice" placeholder="Max Price in Lakhs">
+
+<button onclick="filterProperties()">
+Search
+</button>
+
+</div>
+
+<div id="noResults" class="no-results">
+Properties not available yet in your selected area for sale.
+</div>
+
+</div>
+
+
+
+<section>
+
+<h2 class="section-title">
+Featured Properties
+</h2>
+
+<div class="grid" id="propertyGrid"></div>
+
+</section>
+
+
+<footer>
+
+© 2026 SolidGround Properties
+
+</footer>
+
+
+<script>
+
+/* ADMIN ONLY LISTINGS (Only you edit here) */
+
+let properties =
+JSON.parse(
+localStorage.getItem("properties")
+) || [];
+
+renderProperties(properties);
+
+
+
+function renderProperties(list){
+
+let html="";
+
+list.forEach(p=>{
+
+html+=`
+
+<div class="card">
+
+<img src="${p.img}">
+
+<div class="content">
+
+<h3>${p.title}</h3>
+
+<p>${p.area}</p>
+
+<div class="price">
+₹${p.price} Lakhs
+</div>
+
+<div class="meta">
+
+<span>${p.type}</span>
+
+<span>${p.beds} Beds</span>
+
+</div>
+
+<button class="contact-btn"
+onclick="contactAgent(
+'${p.title}',
+'${p.area}',
+'${p.price}'
+)">
+Contact Agent
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("propertyGrid").innerHTML=html;
+
+}
+
+
+
+function filterProperties(){
+
+let area=
+document.getElementById("areaSearch")
+.value
+.toLowerCase();
+
+let type=
+document.getElementById("typeFilter")
+.value;
+
+let max=
+Number(
+document.getElementById("maxPrice").value
+) || 999999;
+
+
+let filtered=properties.filter(p=>
+
+p.area.toLowerCase().includes(area)
+
+&& (type=="" || p.type==type)
+
+&& p.price<=max
+
+);
+
+
+if(filtered.length===0){
+
+document.getElementById(
+"propertyGrid"
+).innerHTML="";
+
+document.getElementById(
+"noResults"
+).style.display="block";
+
+}
+
+else{
+
+document.getElementById(
+"noResults"
+).style.display="none";
+
+renderProperties(filtered);
+
+}
+
+}
+
+
+renderProperties(properties);
+
+function contactAgent(title,area,price){
+
+let phone="918019671808";
+
+let message=
+`Hello, I am interested in this property:
+
+Property: ${title}
+Area: ${area}
+Price: ₹${price} Lakhs
+
+Please share more details.`;
+
+let url=
+"https://wa.me/"
++ phone
++ "?text="
++ encodeURIComponent(message);
+
+window.open(url,"_blank");
+
+}
+
+</script>
+
+</body>
+</html>

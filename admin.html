@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<style>
+
+body{
+font-family:Arial;
+background:#f4f7fb;
+padding:40px;
+}
+
+.login-box,.dashboard{
+max-width:600px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:20px;
+box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.dashboard{
+display:none;
+}
+
+input,button{
+width:100%;
+padding:15px;
+margin-top:15px;
+border-radius:12px;
+border:1px solid #ddd;
+}
+
+button{
+background:#1d4ed8;
+color:white;
+border:none;
+}
+
+.property{
+background:#eef4ff;
+padding:15px;
+margin-top:15px;
+border-radius:12px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="login-box" id="loginBox">
+
+<h2>Admin Login</h2>
+
+<input id="user" placeholder="Username">
+
+<input id="pass" type="password" placeholder="Password">
+
+<button onclick="login()">
+Login
+</button>
+
+</div>
+
+
+
+<div class="dashboard" id="dashboard">
+
+<h2>Property Admin Panel</h2>
+
+<input id="title" placeholder="Property Title">
+
+<input id="area" placeholder="Area">
+
+<input id="price" placeholder="Price">
+
+<input id="image" placeholder="Image URL">
+
+<button onclick="addProperty()">
+Add Property
+</button>
+
+
+<div id="propertyList"></div>
+
+</div>
+
+
+<script>
+
+let adminUser="admin";
+let adminPass="123456";
+
+let properties=
+JSON.parse(
+localStorage.getItem("properties")
+)||[];
+
+
+function login(){
+
+if(
+user.value===adminUser &&
+pass.value===adminPass
+){
+
+loginBox.style.display="none";
+dashboard.style.display="block";
+
+renderProperties();
+
+}
+else{
+
+alert("Wrong Login");
+
+}
+
+}
+
+
+
+function addProperty(){
+
+let p={
+
+title:title.value,
+
+area:area.value,
+
+price:price.value,
+
+image:image.value,
+
+type:"Apartment"
+
+};
+
+properties.push(p);
+
+localStorage.setItem(
+"properties",
+JSON.stringify(properties)
+);
+
+renderProperties();
+
+alert("Property Added");
+
+}
+
+
+
+function removeProperty(i){
+
+properties.splice(i,1);
+
+localStorage.setItem(
+"properties",
+JSON.stringify(properties)
+);
+
+renderProperties();
+
+}
+
+
+
+function renderProperties(){
+
+let html="";
+
+properties.forEach((p,i)=>{
+
+html+=`
+
+<div class='property'>
+
+<h3>${p.title}</h3>
+
+<p>${p.area}</p>
+
+<p>₹${p.price}</p>
+
+<button onclick='removeProperty(${i})'>
+Delete
+</button>
+
+</div>
+
+`;
+
+});
+
+propertyList.innerHTML=html;
+
+}
+
+</script>
+</body>
+</html>
