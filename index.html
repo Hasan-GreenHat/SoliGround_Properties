@@ -653,11 +653,15 @@ window.open(url,"_blank");
 }
 
 
-  let secretClicks=0;
+ let secretClicks=0;
 
 function openAdmin(){
 
 secretClicks++;
+
+setTimeout(()=>{
+secretClicks=0;
+},3000);
 
 if(secretClicks>=5){
 
@@ -665,6 +669,7 @@ window.location.href="admin.html";
 
 }
 
+}
 }
 
 </script>
