@@ -459,10 +459,7 @@ Featured Properties
 
 </footer>
 
-
-<script>
-
-/* ADMIN ONLY LISTINGS (Only you edit here) */
+<script type="module">
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -470,58 +467,125 @@ from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
 getFirestore,
 collection,
-addDoc,
-getDocs,
-deleteDoc,
-doc
+getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBWiI4R2OCN-k2oNnlazP_abLkIgK_qVZ8",
-  authDomain: "sg-properties-8a5e9.firebaseapp.com",
-  projectId: "sg-properties-8a5e9",
-  storageBucket: "sg-properties-8a5e9.firebasestorage.app",
-  messagingSenderId: "928711351217",
-  appId: "1:928711351217:web:00d15757ef4d8ad4163b90"
+apiKey:"AIzaSyBWiI4R2OCN-k2oNnlazP_abLkIgK_qVZ8",
+authDomain:"sg-properties-8a5e9.firebaseapp.com",
+projectId:"sg-properties-8a5e9",
+storageBucket:"sg-properties-8a5e9.firebasestorage.app",
+messagingSenderId:"928711351217",
+appId:"1:928711351217:web:00d15757ef4d8ad4163b90"
 };
 
+const app=initializeApp(firebaseConfig);
 
-const app =
-initializeApp(firebaseConfig);
+const db=getFirestore(app);
 
-const db =
-getFirestore(app);
-let adminUser="admin";
-let adminPass="123456";
+
+/* GLOBAL properties */
+window.properties=[];
+
+
 
 async function loadProperties(){
 
-let querySnapshot=
+const querySnapshot=
 await getDocs(
 collection(db,"properties")
 );
 
-let properties=[];
+window.properties=[];
 
-querySnapshot.forEach((doc)=>{
+querySnapshot.forEach((docItem)=>{
 
-properties.push(doc.data());
+window.properties.push({
+id:docItem.id,
+...docItem.data()
+});
 
 });
 
-renderProperties(properties);
+renderProperties(window.properties);
 
 }
 
-loadProperties();
+
+window.filterProperties=function(){
+
+let area=
+document.getElementById("areaSearch")
+.value.toLowerCase();
+
+let type=
+document.getElementById("typeFilter").value;
+
+let max=
+Number(
+document.getElementById("maxPrice").value
+)||999999;
+
+
+let filtered=
+window.properties.filter(p=>
+
+p.area.toLowerCase().includes(area)
+
+&& (type=="" || p.type==type)
+
+&& p.price<=max
+
+);
+
+
+if(filtered.length===0){
+
+propertyGrid.innerHTML="";
+
+noResults.style.display="block";
+
+}
+else{
+
+noResults.style.display="none";
+
+renderProperties(filtered);
+
+}
+
+}
 
 
 
-let properties = [];
+window.contactAgent=function(title,area,price){
 
-function renderProperties(list){
+let phone="918019671808";
+
+let message=
+`Hello, I am interested in this property:
+
+Property: ${title}
+Area: ${area}
+Price: ₹${price} Lakhs
+
+Please share more details.`;
+
+window.open(
+"https://wa.me/"
++phone+
+"?text="+
+encodeURIComponent(message),
+"_blank"
+);
+
+}
+
+
+
+window.renderProperties=function(list){
 
 let html="";
 
@@ -531,7 +595,7 @@ html+=`
 
 <div class="card">
 
-<img src="${p.img}">
+<img src="${p.image}">
 
 <div class="content">
 
@@ -545,9 +609,7 @@ html+=`
 
 <div class="meta">
 
-<span>${p.type}</span>
-
-<span>${p.beds} Beds</span>
+<span>${p.type || "Property"}</span>
 
 </div>
 
@@ -568,110 +630,12 @@ Contact Agent
 
 });
 
-document.getElementById("propertyGrid").innerHTML=html;
+propertyGrid.innerHTML=html;
 
 }
 
 
-
-function filterProperties(){
-
-let area=
-document.getElementById("areaSearch")
-.value
-.toLowerCase();
-
-let type=
-document.getElementById("typeFilter")
-.value;
-
-let max=
-Number(
-document.getElementById("maxPrice").value
-) || 999999;
-
-
-let filtered=properties.filter(p=>
-
-p.area.toLowerCase().includes(area)
-
-&& (type=="" || p.type==type)
-
-&& p.price<=max
-
-);
-
-
-if(filtered.length===0){
-
-document.getElementById(
-"propertyGrid"
-).innerHTML="";
-
-document.getElementById(
-"noResults"
-).style.display="block";
-
-}
-
-else{
-
-document.getElementById(
-"noResults"
-).style.display="none";
-
-renderProperties(filtered);
-
-}
-
-}
-
-
-renderProperties(properties);
-
-function contactAgent(title,area,price){
-
-let phone="918019671808";
-
-let message=
-`Hello, I am interested in this property:
-
-Property: ${title}
-Area: ${area}
-Price: ₹${price} Lakhs
-
-Please share more details.`;
-
-let url=
-"https://wa.me/"
-+ phone
-+ "?text="
-+ encodeURIComponent(message);
-
-window.open(url,"_blank");
-
-}
-
-
-
-}
-
-</script>
-<script>
-
-let secretClicks=0;
-
-function openAdmin(){
-
-secretClicks++;
-
-if(secretClicks>=5){
-
-window.location.href="admin.html";
-
-}
-
-}
+loadProperties();
 
 </script>
 </body>
