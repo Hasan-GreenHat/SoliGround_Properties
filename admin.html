@@ -119,10 +119,26 @@ getFirestore(app);
 let adminUser="admin";
 let adminPass="123456";
 
-let properties=
-JSON.parse(
-localStorage.getItem("properties")
-)||[];
+async function loadProperties(){
+
+let querySnapshot=
+await getDocs(
+collection(db,"properties")
+);
+
+let properties=[];
+
+querySnapshot.forEach((doc)=>{
+
+properties.push(doc.data());
+
+});
+
+renderProperties(properties);
+
+}
+
+loadProperties();
 
 
 function login(){
