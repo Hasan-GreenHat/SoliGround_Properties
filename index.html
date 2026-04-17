@@ -464,12 +464,60 @@ Featured Properties
 
 /* ADMIN ONLY LISTINGS (Only you edit here) */
 
-let properties =
-JSON.parse(
-localStorage.getItem("properties")
-) || [];
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs,
+deleteDoc,
+doc
+}
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBWiI4R2OCN-k2oNnlazP_abLkIgK_qVZ8",
+  authDomain: "sg-properties-8a5e9.firebaseapp.com",
+  projectId: "sg-properties-8a5e9",
+  storageBucket: "sg-properties-8a5e9.firebasestorage.app",
+  messagingSenderId: "928711351217",
+  appId: "1:928711351217:web:00d15757ef4d8ad4163b90"
+};
+
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getFirestore(app);
+let adminUser="admin";
+let adminPass="123456";
+
+async function loadProperties(){
+
+let querySnapshot=
+await getDocs(
+collection(db,"properties")
+);
+
+let properties=[];
+
+querySnapshot.forEach((doc)=>{
+
+properties.push(doc.data());
+
+});
 
 renderProperties(properties);
+
+}
+
+loadProperties();
+
+
 
 
 
