@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Admin Dashboard</title>
+
 <style>
 
 body{
@@ -11,7 +14,7 @@ padding:40px;
 }
 
 .login-box,.dashboard{
-max-width:600px;
+max-width:700px;
 margin:auto;
 background:white;
 padding:30px;
@@ -21,6 +24,7 @@ box-shadow:0 8px 20px rgba(0,0,0,.08);
 
 .dashboard{
 display:none;
+margin-top:30px;
 }
 
 input,button{
@@ -35,6 +39,7 @@ button{
 background:#1d4ed8;
 color:white;
 border:none;
+cursor:pointer;
 }
 
 .property{
@@ -80,13 +85,16 @@ Login
 Add Property
 </button>
 
-
 <div id="propertyList"></div>
 
 </div>
 
 
+
+<!-- FIREBASE -->
+
 <script type="module">
+
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
@@ -104,6 +112,7 @@ from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyBWiI4R2OCN-k2oNnlazP_abLkIgK_qVZ8",
   authDomain: "sg-properties-8a5e9.firebaseapp.com",
+  databaseURL: "https://sg-properties-8a5e9-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "sg-properties-8a5e9",
   storageBucket: "sg-properties-8a5e9.firebasestorage.app",
   messagingSenderId: "928711351217",
@@ -111,49 +120,44 @@ const firebaseConfig = {
 };
 
 
-const app =
+const app=
 initializeApp(firebaseConfig);
 
-const db =
+const db=
 getFirestore(app);
-let adminUser="admin";
-let adminPass="123456";
-
-async function loadProperties(){
-
-let querySnapshot=
-await getDocs(
-collection(db,"properties")
-);
-
-let properties=[];
-
-querySnapshot.forEach((doc)=>{
-
-properties.push(doc.data());
-
-});
-
-renderProperties(properties);
-
-}
-
-loadProperties();
 
 
+/* Make Firebase global */
 
+window.db=db;
+
+window.addDoc=addDoc;
+
+window.getDocs=getDocs;
+
+window.collection=collection;
+
+window.deleteDoc=deleteDoc;
+
+window.doc=doc;
 
 </script>
 
-  <script>
 
-    let properties=[];
+
+<!-- NORMAL JAVASCRIPT -->
+
+<script>
 
 let adminUser="admin";
 
 let adminPass="123456";
 
-    function login(){
+let properties=[];
+
+
+
+function login(){
 
 if(
 user.value===adminUser &&
@@ -161,9 +165,10 @@ pass.value===adminPass
 ){
 
 loginBox.style.display="none";
+
 dashboard.style.display="block";
 
-renderProperties();
+loadProperties();
 
 }
 else{
@@ -173,9 +178,9 @@ alert("Wrong Login");
 }
 
 }
-  </script>
-<script>
-  
+
+
+
 
 async function addProperty(){
 
@@ -191,45 +196,55 @@ area:area.value,
 
 price:price.value,
 
-image:image.value,
-
-type:"Apartment"
+image:image.value
 
 }
 
 );
-
-alert("Property Added Live");
-
-}
-renderProperties();
 
 alert("Property Added");
 
+loadProperties();
+
+}
 
 
 
 
-function removeProperty(i){
+async function loadProperties(){
 
-properties.splice(i,1);
+let snapshot=
 
-localStorage.setItem(
-"properties",
-JSON.stringify(properties)
+await getDocs(
+collection(db,"properties")
 );
+
+properties=[];
+
+snapshot.forEach((docItem)=>{
+
+properties.push({
+
+id:docItem.id,
+
+...docItem.data()
+
+});
+
+});
 
 renderProperties();
 
 }
 
 
-let properties = [];
+
+
 function renderProperties(){
 
 let html="";
 
-properties.forEach((p,i)=>{
+properties.forEach((p)=>{
 
 html+=`
 
@@ -241,7 +256,11 @@ html+=`
 
 <p>₹${p.price}</p>
 
-<button onclick='removeProperty(${i})'>
+<img src="${p.image}" width="100%">
+
+<br><br>
+
+<button onclick="deleteProperty('${p.id}')">
 Delete
 </button>
 
@@ -254,6 +273,21 @@ Delete
 propertyList.innerHTML=html;
 
 }
-  </script>
+
+
+
+
+async function deleteProperty(id){
+
+await deleteDoc(
+doc(db,"properties",id)
+);
+
+loadProperties();
+
+}
+
+</script>
+
 </body>
 </html>
