@@ -87,7 +87,35 @@ Add Property
 
 
 <script>
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs,
+deleteDoc,
+doc
+}
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBWiI4R2OCN-k2oNnlazP_abLkIgK_qVZ8",
+  authDomain: "sg-properties-8a5e9.firebaseapp.com",
+  projectId: "sg-properties-8a5e9",
+  storageBucket: "sg-properties-8a5e9.firebasestorage.app",
+  messagingSenderId: "928711351217",
+  appId: "1:928711351217:web:00d15757ef4d8ad4163b90"
+};
+
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getFirestore(app);
 let adminUser="admin";
 let adminPass="123456";
 
@@ -120,9 +148,13 @@ alert("Wrong Login");
 
 
 
-function addProperty(){
+async function addProperty(){
 
-let p={
+await addDoc(
+
+collection(db,"properties"),
+
+{
 
 title:title.value,
 
@@ -134,15 +166,13 @@ image:image.value,
 
 type:"Apartment"
 
-};
+}
 
-properties.push(p);
-
-localStorage.setItem(
-"properties",
-JSON.stringify(properties)
 );
 
+alert("Property Added Live");
+
+}
 renderProperties();
 
 alert("Property Added");
